@@ -528,3 +528,26 @@ h3 {
     font-size: 22px;
     color: #a78bfa;
 }
+/* Tambah ke style.css */
+select.input-line {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+select.input-line option {
+    background: #0f0f17;
+    color: white;
+}
+
+select.input-line:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
