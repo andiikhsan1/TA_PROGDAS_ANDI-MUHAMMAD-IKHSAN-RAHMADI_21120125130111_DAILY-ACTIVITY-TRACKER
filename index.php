@@ -1,49 +1,43 @@
 <?php
-// BAGIAN KONFIGURASI DAN KONEKSI DATABASE
-include "config.php"; // File konfigurasi untuk koneksi database
-$db2 = new mysqli("localhost", "root", "", "tracker2"); // Koneksi ke database tracker2
+include "config.php"; 
+$db2 = new mysqli("localhost", "root", "", "tracker2"); 
 
-// BAGIAN PENANGANAN FORM TAMBAH AKTIVITAS
+
 if (isset($_POST['add'])) {
     $name = $_POST['name'];
-    // Menyimpan aktivitas baru dengan progress default 0%
     $db2->query("INSERT INTO activities (name, progress) VALUES ('$name', 0)");
-    header("Location: index.php"); // Redirect setelah berhasil
+    header("Location: index.php"); 
     exit;
 }
-// BAGIAN PENANGANAN HAPUS AKTIVITAS
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    // Menghapus aktivitas berdasarkan ID
     $db2->query("DELETE FROM activities WHERE id='$id'");
-    header("Location: index.php"); // Redirect setelah berhasil
+    header("Location: index.php"); 
     exit;
 }
-// BAGIAN PENGAMBILAN DAN PERHITUNGAN DATA
-$data = $db2->query("SELECT * FROM activities"); // Ambil semua data aktivitas
+$data = $db2->query("SELECT * FROM activities"); 
 
 $totalProgress = 0;
 $totalActivities = 0;
 $completed = 0;
 $overallPercentage = 0;
 
-// Hitung statistik progres jika ada data
 if ($data && $data->num_rows > 0) {
-    $totalActivities = $data->num_rows; // Hitung total aktivitas
-    $data->data_seek(0); // Reset pointer data
+    $totalActivities = $data->num_rows; 
+    $data->data_seek(0); 
     
-    // Loop melalui setiap aktivitas
+    
     while ($row = $data->fetch_assoc()) {
-        $totalProgress += $row['progress']; // Akumulasi progres
-        if ($row['progress'] == 100) $completed++; // Hitung yang selesai
+        $totalProgress += $row['progress']; 
+        if ($row['progress'] == 100) $completed++; 
     }
     
-    // Hitung persentase keseluruhan
+    
     if ($totalActivities > 0) {
         $overallPercentage = round($totalProgress / $totalActivities, 1);
     }
     
-    $data->data_seek(0); // Reset pointer untuk penggunaan berikutnya
+    $data->data_seek(0); 
 }
 ?>
 
@@ -58,12 +52,11 @@ if ($data && $data->num_rows > 0) {
 <body>
 
 <div class="container">
-    <!-- HEADER UTAMA -->
+    
     <div class="header">
         <h1>📊 Daily Activity Tracker</h1>
     </div>
 
-    <!-- KARTU STATISTIK PROGRES -->
     <div class="card">
         <h2><i class="fas fa-chart-line"></i> Overall Progress</h2>
         <div class="progress-summary">
@@ -106,7 +99,6 @@ if ($data && $data->num_rows > 0) {
         </div>
     </div>
 
-    <!-- FORM TAMBAH AKTIVITAS -->
     <div class="grid">
         <div class="card">
             <h2><i class="fas fa-plus-circle"></i> Add Daily Activity</h2>
@@ -122,7 +114,7 @@ if ($data && $data->num_rows > 0) {
         </div>
     </div>
 
-    <!-- TABEL DAFTAR AKTIVITAS -->
+
     <div class="card">
         <h2><i class="fas fa-list-alt"></i> Daily Activities</h2>
         <div class="table-container">
@@ -186,4 +178,5 @@ if ($data && $data->num_rows > 0) {
     </div>
 </div>
 </body>
+
 </html>
