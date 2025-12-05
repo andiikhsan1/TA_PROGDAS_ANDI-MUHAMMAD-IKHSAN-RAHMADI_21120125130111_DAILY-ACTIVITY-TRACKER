@@ -1,5 +1,4 @@
 <?php
-// detail_activity.php
 class ActivityProgress {
     private $progress;
     
@@ -34,16 +33,13 @@ class ActivityProgress {
     }
 }
 
-// Koneksi Database
 $koneksi = new mysqli("localhost", "root", "", "tracker2");
 if ($koneksi->connect_errno) die("Database connection failed");
 
-// Konstanta dan Variabel
 define('DAYS', ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]);
 $activity_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT) ?: die("Invalid Activity ID");
 $activity = $koneksi->query("SELECT * FROM activities WHERE id=$activity_id")->fetch_assoc() ?: die("Activity not found");
 
-// Handle API Requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
     $action = $_POST['action'];
@@ -83,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             $koneksi->query("UPDATE weekly SET is_done=$is_done WHERE activity_id=$activity_id AND week_number=$week_number AND day_name='$day_name'");
             
-            // Calculate new progress
+        
             $tot = $koneksi->query("SELECT COUNT(*) AS tot FROM weekly WHERE activity_id=$activity_id")->fetch_assoc()['tot'];
             $done = $koneksi->query("SELECT COUNT(*) AS donec FROM weekly WHERE activity_id=$activity_id AND is_done=1")->fetch_assoc()['donec'];
             $percent = $tot > 0 ? round(($done / $tot) * 100) : 0;
@@ -97,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit;
 }
 
-// Load Weeks Data
 $weeks = [];
 $weeks_rs = $koneksi->query("SELECT DISTINCT week_number FROM weekly WHERE activity_id=$activity_id ORDER BY week_number ASC");
 while ($r = $weeks_rs->fetch_assoc()) $weeks[] = intval($r['week_number']);
@@ -111,7 +106,6 @@ if ($hasWeeks) {
     }
 }
 
-// Helper Functions
 function formatTanggal($date) {
     if (empty($date) || $date == '0000-00-00') return '-';
     $timestamp = strtotime($date);
@@ -120,7 +114,6 @@ function formatTanggal($date) {
     return $hari[date('w', $timestamp)] . ', ' . date('d', $timestamp) . ' ' . $bulan[date('n', $timestamp)-1] . ' ' . date('Y', $timestamp);
 }
 
-// Create ActivityProgress Object
 $activityProgress = new ActivityProgress(intval($activity['progress']));
 ?>
 <!DOCTYPE html>
@@ -227,7 +220,6 @@ $activityProgress = new ActivityProgress(intval($activity['progress']));
 <script>
 const activityId = <?= $activity_id ?>;
 
-// Helper Functions
 const updateSchedulePreview = () => {
     const startDate = document.getElementById('start-date')?.value;
     const weeks = parseInt(document.getElementById('initial-weeks')?.value || 4);
@@ -266,7 +258,6 @@ const updateWeekProgress = (weekCard) => {
     if (weekPercentElement) weekPercentElement.textContent = weekPercent + '%';
 };
 
-// API Call Function
 const callAPI = async (action, data = {}) => {
     try {
         const response = await fetch('', {
@@ -281,7 +272,6 @@ const callAPI = async (action, data = {}) => {
     }
 };
 
-// Event Listeners
 document.getElementById('start-date')?.addEventListener('change', updateSchedulePreview);
 document.getElementById('initial-weeks')?.addEventListener('input', updateSchedulePreview);
 updateSchedulePreview();
@@ -304,7 +294,6 @@ document.getElementById('add-week-btn')?.addEventListener('click', async () => {
     else alert('Failed to add week');
 });
 
-// Checkbox 
 document.addEventListener('click', async (e) => {
     if (!e.target.classList.contains('day-checkbox')) return;
     
@@ -333,4 +322,5 @@ document.addEventListener('click', async (e) => {
 });
 </script>
 </body>
+
 </html>
